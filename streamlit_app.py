@@ -102,7 +102,6 @@ if st.button("Kickoff Crew", type="primary", disabled=not (company_name and comp
         
         if kickoff_response and "kickoff_id" in kickoff_response:
             kickoff_id = kickoff_response["kickoff_id"]
-            kickoff_url = "b9fda3e9-cce4-4e7f-8fdf-31b2222770cb"
             st.success(f"Crew kicked off successfully! Kickoff ID: {kickoff_id}")
             
             # Create a placeholder for status updates
@@ -115,8 +114,7 @@ if st.button("Kickoff Crew", type="primary", disabled=not (company_name and comp
             max_attempts = 120  # Limit polling to prevent infinite loops
             
             while not complete and attempts < max_attempts:
-                # status_data = api_request(f"status/{kickoff_id}")
-                status_data = api_request(f"status/b9fda3e9-cce4-4e7f-8fdf-31b2222770cb")
+                status_data = api_request(f"status/{kickoff_id}")
                 
                 if status_data:
                     status_container.info(f"State: {status_data.get('state', 'null')}")
