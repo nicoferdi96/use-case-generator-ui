@@ -3,23 +3,9 @@ import time
 import json
 import requests
 import streamlit as st
-import dotenv
-from dotenv import load_dotenv
-
-# Load environment variables
-load_dotenv()
-
-# Get API credentials from environment variables
-# API_URL = os.getenv("CRW_API_URL")
-# API_TOKEN = os.getenv("CRW_API_TOKEN")
 
 API_URL = st.secrets["CRW_API_URL"]
 API_TOKEN = st.secrets["CRW_API_TOKEN"]
-
-if not API_URL or not API_TOKEN:
-    st.error("❌ API URL or TOKEN not found in .env file")
-    st.stop()
-
 # Set page configuration
 st.set_page_config(page_title="CrewAI Kickoff UI", page_icon="🤖", layout="wide")
 st.title("CrewAI Kickoff UI")
