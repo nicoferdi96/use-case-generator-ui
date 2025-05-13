@@ -3,12 +3,52 @@ import time
 import json
 import requests
 import streamlit as st
+import hmac
 
+# Set page configuration
+st.set_page_config(page_title="CrewAI Use Case Generator", page_icon="🤖", layout="wide")
+
+# Authentication function
+def check_password():
+    """Returns `True` if the user had the correct password."""
+
+    def password_entered():
+        """Checks whether a password entered by the user is correct."""
+        if hmac.compare_digest(st.session_state["username"], st.secrets["auth"]["username"]) and \
+           hmac.compare_digest(st.session_state["password"], st.secrets["auth"]["password"]):
+            st.session_state["password_correct"] = True
+            # Delete password from session state
+            del st.session_state["password"]
+            del st.session_state["username"]
+        else:
+            st.session_state["password_correct"] = False
+            st.error("😕 Username or password incorrect")
+
+    # Return True if the password is validated
+    if st.session_state.get("password_correct", False):
+        return True
+
+    # Show inputs for username + password
+    st.title("CrewAI Use Case Generator Login")
+    
+    # Display login form
+    with st.form("login_form"):
+        st.text_input("Username", key="username")
+        st.text_input("Password", type="password", key="password")
+        st.form_submit_button("Login", on_click=password_entered)
+    
+    return False
+
+# Check if the user is authenticated
+if not check_password():
+    st.stop()  # Stop execution if authentication failed
+
+# If we get here, the user is authenticated
 API_URL = st.secrets["CRW_API_URL"]
 API_TOKEN = st.secrets["CRW_API_TOKEN"]
-# Set page configuration
-st.set_page_config(page_title="CrewAI Kickoff UI", page_icon="🤖", layout="wide")
-st.title("CrewAI Kickoff UI")
+
+# Main app title
+st.title("CrewAI Use Case Generator")
 
 # Function to make authenticated API requests
 def api_request(endpoint, method="GET", data=None):
@@ -60,11 +100,18 @@ with st.sidebar:
         st.success("✅ API is connected and healthy")
     else:
         st.error("❌ API is not available")
-        st.info("Please check your .env file configuration")
+        st.info("Please check your API configuration")
     
     st.divider()
     st.subheader("About")
     st.markdown(":rainbow[This UI allows you to kickoff your Crew!]")
+    
+    # Add logout button
+    st.divider()
+    if st.button("Logout"):
+        # Reset authentication status
+        st.session_state["password_correct"] = False
+        st.experimental_rerun()
 
 # Input form
 st.subheader("Crew Inputs")
